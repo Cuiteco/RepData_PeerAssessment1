@@ -1,5 +1,5 @@
 ---
-title: "Reproducible Research Course  Peer Assement 1"
+title: "Reproducible Research Course  Peer Assessment 1"
 author: "Edith Reyes Loya"
 date: "18 de abril de 2015"
 output: html_document
@@ -7,10 +7,11 @@ output: html_document
 
 ####*1. Loading and preprocessing the data*
 ```{r, echo=TRUE}
-
 library(lubridate)
 library(dplyr)
+#Load the data (i.e. read.csv())
 data<-read.csv("activity.csv")
+#Process/transform the data (if necessary) into a format suitable for your analysis
 data$date<-ymd(data$date)
 str(data)
 ```
@@ -21,8 +22,10 @@ str(data)
 suma<-tapply(data$steps, INDEX=as.factor(data$date), FUN=sum)
 suma<-data.frame(suma)
 head(suma)
+#Calculate and report the mean and median total number of steps taken per day
 media<-mean(suma$suma,na.rm=TRUE)
 mediana<-median(suma$suma,na.rm=TRUE)
+#Make a histogram of the total number of steps taken each day
 hist(suma$suma,breaks=20,col="red",xlab="Intervals",main="Histogram of sum of steps per day")
 abline(v=media,col="blue")
 abline(v=mediana,col="purple")
@@ -34,9 +37,11 @@ text(x=4000,y=7,labels=c(paste("Median = ",as.character(round(mediana,3),digits=
 ```{r, echo=TRUE}
 medias<-tapply(data$steps, INDEX=data$interval, FUN=mean, na.rm=TRUE)
 medias<-data.frame(medias)
+#Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 maximo<-max(medias$medias)
 k<-which.max(medias$medias)
 cual<-row.names(medias)[k]
+#Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-ax
 plot(x=row.names(medias),y=medias$medias,type="l",xlab="intervals",ylab="means of every interval",col="blue",main="Means of every 5-minutes intervals")
 abline(v=cual,col="red")
 text(x=300,y=100,labels=c(paste("Maximum = ",as.character(round(maximo,3),digits=3)),sep=" "),col="red")
@@ -73,9 +78,11 @@ Now the median is equal to the mean
 
 ####*5.Are there differences in activity patterns between weekdays and weekends?*
 ```{r, echo=TRUE}
+#Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 weekday<-mutate(data,week=ifelse(weekdays(date)=="Sunday" | weekdays(date)=="Saturday","Weekend","Weekday"),interval,steps)
 medias<-tapply(weekday$steps, INDEX=list(weekday$week,weekday$interval), FUN=mean, na.rm=TRUE)
 columnas<-colnames(medias)
+#Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis)
 head(row.names(medias))
 par(mfrow=c(2,1),mar=c(3,5,3,5))
 plot(x=colnames(medias),y=medias[1,],type="l",xlab="intervals",ylab="means of every interval",col="blue",main=c("Means of every 5-minutes intervals in ",row.names(medias)[1]))
